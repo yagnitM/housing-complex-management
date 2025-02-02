@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "./Dashboard.css"; 
+import "./Dashboard.css";
 
 const Dashboard = () => {
   return (
@@ -9,15 +9,21 @@ const Dashboard = () => {
         <h1>Welcome to the Dashboard</h1>
         <p>Your central hub for managing the housing complex efficiently.</p>
       </header>
+      
       <Link to="/" className="logout-button">
         <button>Logout</button>
       </Link>
 
-      <section className="feature-grid">
+      {/* Centered Add Your Apartment Card */}
+      <div className="centered-card">
         <Link to="/add-apartment" className="feature-card add-apartment-card">
           <h3>Add Your Apartment</h3>
           <p>Add a new housing complex or apartment building to manage.</p>
         </Link>
+      </div>
+
+      {/* 2x5 Grid Layout */}
+      <section className="feature-grid">
         <Link to="/residents" className="feature-card">
           <h3>Manage Residents</h3>
           <p>View and manage resident details with ease.</p>

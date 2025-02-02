@@ -8,10 +8,41 @@
   margin-bottom: 30px;
 }
 
+/* Centered Add Your Apartment Card */
+.centered-card {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* 2x5 Grid Layout for the remaining 10 cards */
 .feature-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(5, 1fr); /* 5 columns */
+  grid-template-rows: repeat(2, auto);  /* 2 rows */
   gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .feature-grid {
+    grid-template-columns: repeat(3, 1fr); /* Adjust to 3x4 layout for tablets */
+    grid-template-rows: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr); /* Adjust to 2x5 layout for smaller screens */
+  }
+}
+
+@media (max-width: 500px) {
+  .feature-grid {
+    grid-template-columns: repeat(1, 1fr); /* Single column on small screens */
+  }
 }
 
 .feature-card {
@@ -58,6 +89,7 @@
   background-color: #d32f2f;
 }
 
+/* Styling for the Add Your Apartment card */
 .add-apartment-card {
   background-color: #e3f2fd;
   border-color: #2196f3;
@@ -65,8 +97,4 @@
 
 .add-apartment-card:hover {
   background-color: #bbdefb;
-}
-
-.gap {
-  margin-bottom: 20px; 
 }
