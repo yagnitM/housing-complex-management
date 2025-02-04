@@ -8,6 +8,7 @@ const Signup = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false); // New state for the checkbox
 
   const navigate = useNavigate();
 
@@ -74,6 +75,18 @@ const Signup = () => {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
+
+        {/* Checkbox for signing up as an administrator */}
+        <div className="checkbox-container">
+  <input
+    type="checkbox"
+    id="admin-checkbox"
+    checked={isAdmin}
+    onChange={() => setIsAdmin(!isAdmin)}
+  />
+  <label htmlFor="admin-checkbox">Sign up as administrator</label>
+</div>
+
         {errorMessage && <p className="error">{errorMessage}</p>}
         {successMessage && <p className="success">{successMessage}</p>}
         {loading ? <p>Loading...</p> : <button type="submit">Sign Up</button>}

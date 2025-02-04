@@ -1,0 +1,100 @@
+.resi-dashboard-main {
+    padding: 20px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+  }
+  
+  .resi-dashboard-header {
+    margin-bottom: 30px;
+  }
+  
+  /* Centered My Apartment Card */
+  .centered-card {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  /* 2x4 Grid Layout */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns */
+    grid-template-rows: repeat(2, auto);  /* 2 rows */
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .feature-grid {
+      grid-template-columns: repeat(3, 1fr); /* 3x3 layout for tablets */
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .feature-grid {
+      grid-template-columns: repeat(2, 1fr); /* 2x4 layout for smaller screens */
+    }
+  }
+  
+  @media (max-width: 500px) {
+    .feature-grid {
+      grid-template-columns: repeat(1, 1fr); /* Single column on small screens */
+    }
+  }
+  
+  .feature-card {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: left;
+    text-decoration: none;
+    color: #333;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+  }
+  
+  .feature-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+  }
+  
+  .feature-card h3 {
+    margin-top: 0;
+  }
+  
+  .feature-card p {
+    margin-bottom: 0;
+  }
+  
+  .logout-button {
+    display: block;
+    margin-bottom: 20px;
+  }
+  
+  .logout-button button {
+    background-color: #f44336; /* Red color for logout */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 110px;
+  }
+  
+  .logout-button button:hover {
+    background-color: #d32f2f;
+  }
+  
+  /* Styling for My Apartment Card */
+  .my-apartment-card {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+  }
+  
+  .my-apartment-card:hover {
+    background-color: #bbdefb;
+  }
+  

@@ -9,6 +9,10 @@ const Login = () => {
 
   const navigate = useNavigate();
 
+  // Stored credentials for admin and residents
+  const adminCredentials = { email: "admin@example.com", password: "Admin123!" };
+  const residentCredentials = { email: "user@example.com", password: "Password123!" };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setErrorMessage("");
@@ -19,22 +23,21 @@ const Login = () => {
       return;
     }
 
-    // Simulated login logic (replace with actual API later)
-    const mockUsers = [
-      { email: "user@example.com", password: "Password123!" },
-      { email: "admin@example.com", password: "Admin123!" },
-    ];
+    setLoading(true);
 
-    const user = mockUsers.find((u) => u.email === email && u.password === password);
-    if (user) {
-      setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-        navigate("/Dashboard");
-      }, 2000); // Simulate API delay
-    } else {
-      setErrorMessage("Invalid credentials. Please try again.");
-    }
+    setTimeout(() => {
+      setLoading(false);
+
+      if (email === adminCredentials.email && password === adminCredentials.password) {
+        localStorage.setItem("role", "admin"); // Store role
+        navigate("/dashboard"); // Redirect to admin dashboard
+      } else if (email === residentCredentials.email && password === residentCredentials.password) {
+        localStorage.setItem("role", "resident"); // Store role
+        navigate("/residashboard"); // Redirect to resident dashboard
+      } else {
+        setErrorMessage("Invalid credentials. Please try again.");
+      }
+    }, 2000); // Simulated API delay
   };
 
   return (

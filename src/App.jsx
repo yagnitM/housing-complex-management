@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Dashboard from "./pages/Dashboard";  
+import ResiDashboard from "./pages/ResiDashboard";
 import About from "./components/About"; 
 import Services from "./components/Services";
 import CommunityNotices from "./components/CommunityNotices";
@@ -24,6 +25,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/residashboard" element={<ResiDashboard />} />
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services />} />
           <Route path="/community-notices" element={<CommunityNotices />} />
