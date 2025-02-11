@@ -18,7 +18,8 @@ function App() {
   return (
     <>
       {/* Conditionally render Header based on the route */}
-      {location.pathname !== "/dashboard" && <Header />}
+      {location.pathname !== "/dashboard" && location.pathname !== "/residashboard" && <Header />}
+      
       <div className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />

@@ -15,7 +15,7 @@
   margin-bottom: 20px;
 }
 
-/* 2x5 Grid Layout for the remaining 10 cards */
+/* 2x5 Grid Layout for the remaining 10 cards (excluding the centered card) */
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr); /* 5 columns */
@@ -28,14 +28,14 @@
 /* Responsive Design */
 @media (max-width: 1024px) {
   .feature-grid {
-    grid-template-columns: repeat(3, 1fr); /* Adjust to 3x4 layout for tablets */
+    grid-template-columns: repeat(3, 1fr); /* Adjust to 3 columns for tablets */
     grid-template-rows: auto;
   }
 }
 
 @media (max-width: 768px) {
   .feature-grid {
-    grid-template-columns: repeat(2, 1fr); /* Adjust to 2x5 layout for smaller screens */
+    grid-template-columns: repeat(2, 1fr); /* Adjust to 2 columns for smaller screens */
   }
 }
 

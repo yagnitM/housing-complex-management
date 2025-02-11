@@ -56,14 +56,7 @@ const Dashboard = () => {
           <h3>Reports</h3>
           <p>Generate detailed reports on activities.</p>
         </Link>
-        <Link to="/profile" className="feature-card">
-          <h3>Profile Settings</h3>
-          <p>Update your personal information and preferences.</p>
-        </Link>
-        <Link to="/feedback" className="feature-card">
-          <h3>Feedback & Support</h3>
-          <p>Submit feedback or get assistance with any issues you encounter.</p>
-        </Link>
+        
       </section>
     </main>
   );
