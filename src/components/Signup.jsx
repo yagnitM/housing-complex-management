@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 const Signup = () => {
+  const [name, setName] = useState(""); // New state for name
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -27,7 +28,7 @@ const Signup = () => {
     setSuccessMessage("");
 
     // Validate input
-    if (!email || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirmPassword) {
       setErrorMessage("All fields are required.");
       return;
     }
@@ -58,6 +59,12 @@ const Signup = () => {
       <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
         <input
+          type="text"
+          placeholder="Name"
+          value={name} // Corrected: Using name state
+          onChange={(e) => setName(e.target.value)}
+        />
+        <input
           type="email"
           placeholder="Email"
           value={email}
@@ -78,14 +85,14 @@ const Signup = () => {
 
         {/* Checkbox for signing up as an administrator */}
         <div className="checkbox-container">
-  <input
-    type="checkbox"
-    id="admin-checkbox"
-    checked={isAdmin}
-    onChange={() => setIsAdmin(!isAdmin)}
-  />
-  <label htmlFor="admin-checkbox">Sign up as administrator</label>
-</div>
+          <input
+            type="checkbox"
+            id="admin-checkbox"
+            checked={isAdmin}
+            onChange={() => setIsAdmin(!isAdmin)}
+          />
+          <label htmlFor="admin-checkbox">Sign up as administrator</label>
+        </div>
 
         {errorMessage && <p className="error">{errorMessage}</p>}
         {successMessage && <p className="success">{successMessage}</p>}

@@ -14,11 +14,11 @@ const Dashboard = () => {
         <button>Logout</button>
       </Link>
 
-      {/* Centered Add Your Apartment Card */}
+      {/* Centered Add Your Society Card */}
       <div className="centered-card">
-        <Link to="/add-apartment" className="feature-card add-apartment-card">
-          <h3>Add Your Apartment</h3>
-          <p>Add a new housing complex or apartment building to manage.</p>
+        <Link to="/add-society" className="feature-card add-society-card">
+          <h3>Add Your Society</h3>
+          <p>Add a new residential society to manage apartments within it.</p>
         </Link>
       </div>
 
@@ -56,7 +56,6 @@ const Dashboard = () => {
           <h3>Reports</h3>
           <p>Generate detailed reports on activities.</p>
         </Link>
-        
       </section>
     </main>
   );

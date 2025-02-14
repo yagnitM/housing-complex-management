@@ -11,6 +11,8 @@ import About from "./components/About";
 import Services from "./components/Services";
 import CommunityNotices from "./components/CommunityNotices";
 import ContactUs from "./components/ContactUs";
+import AddApartmentForm from "./components/AddApartmentForm"; 
+import AddSocietyForm from "./components/AddSocietyForm";
 
 function App() {
   const location = useLocation();
@@ -20,20 +22,24 @@ function App() {
       {/* Conditionally render Header based on the route */}
       {location.pathname !== "/dashboard" && location.pathname !== "/residashboard" && <Header />}
       
-      <div className="main-content">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/residashboard" element={<ResiDashboard />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/community-notices" element={<CommunityNotices />} />
-          <Route path="/contact-us" element={<ContactUs />} />
-        </Routes>
+      <div id="root">
+        <div className="main-content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/residashboard" element={<ResiDashboard />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/community-notices" element={<CommunityNotices />} />
+            <Route path="/contact-us" element={<ContactUs />} />
+            <Route path="/add-apartment" element={<AddApartmentForm />} />
+            <Route path="/add-society" element={<AddSocietyForm />} />
+          </Routes>
+        </div>
+        <Footer />
       </div>
-      <Footer />
     </>
   );
 }
