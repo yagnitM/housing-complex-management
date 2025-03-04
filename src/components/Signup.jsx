@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
 const Signup = () => {
-  const [name, setName] = useState(""); // New state for name
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false); // New state for the checkbox
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const navigate = useNavigate();
 
@@ -22,13 +23,12 @@ const Signup = () => {
     );
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
     setSuccessMessage("");
 
-    // Validate input
-    if (!name || !email || !password || !confirmPassword) {
+    if (!username || !email || !password || !confirmPassword) {
       setErrorMessage("All fields are required.");
       return;
     }
@@ -45,13 +45,27 @@ const Signup = () => {
       return;
     }
 
-    // Simulate signup logic (replace with actual API later)
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+
+    try {
+      console.log(username, email, password, isAdmin);
+      const response = await axios.post("http://localhost:6060/api/auth/register", {
+        username,
+        email,
+        password,
+        role: isAdmin ? "admin" : "resident",
+      });
+
+      // console.log(response);  
+
       setSuccessMessage("Signup successful! Redirecting to login...");
       setTimeout(() => navigate("/login"), 2000);
-    }, 2000); // Simulate API delay
+    } catch (error) {
+      setErrorMessage(error.response?.data?.message || "Signup failed");
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -60,9 +74,9 @@ const Signup = () => {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Name"
-          value={name} // Corrected: Using name state
-          onChange={(e) => setName(e.target.value)}
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
         <input
           type="email"
@@ -83,7 +97,6 @@ const Signup = () => {
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
 
-        {/* Checkbox for signing up as an administrator */}
         <div className="checkbox-container">
           <input
             type="checkbox"
@@ -96,7 +109,10 @@ const Signup = () => {
 
         {errorMessage && <p className="error">{errorMessage}</p>}
         {successMessage && <p className="success">{successMessage}</p>}
-        {loading ? <p>Loading...</p> : <button type="submit">Sign Up</button>}
+
+        <button type="submit" disabled={loading}>
+          {loading ? "Signing Up..." : "Sign Up"}
+        </button>
       </form>
       <p>
         Already have an account? <Link to="/login">Log in</Link>

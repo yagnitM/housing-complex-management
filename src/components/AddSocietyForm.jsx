@@ -1,7 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import for redirection
+import axios from "axios"; // Import axios for API requests
 import "./AddSocietyForm.css";
 
 const AddSocietyForm = () => {
+  const navigate = useNavigate(); // Initialize navigate function
+
   const [formData, setFormData] = useState({
     name: "",
     address: "",
@@ -39,10 +43,16 @@ const AddSocietyForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitted Data:", formData);
-    alert("Society Added Successfully!");
+    try {
+      const response = await axios.post("http://localhost:5000/api/societies", formData);
+      alert("Society Added Successfully!");
+      navigate("/add-apartment"); // Redirect to AddApartmentForm.jsx
+    } catch (error) {
+      console.error("Error adding society:", error);
+      alert("Failed to add society. Please try again.");
+    }
   };
 
   return (

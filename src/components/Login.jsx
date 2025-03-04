@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -9,15 +10,10 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  // Stored credentials for admin and residents
-  const adminCredentials = { email: "admin@example.com", password: "Admin123!" };
-  const residentCredentials = { email: "user@example.com", password: "Password123!" };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
 
-    // Validate input
     if (!email || !password) {
       setErrorMessage("All fields are required.");
       return;
@@ -25,19 +21,26 @@ const Login = () => {
 
     setLoading(true);
 
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const response = await axios.post("http://localhost:6060/api/auth/login", {
+        email,
+        password,
+      });
 
-      if (email === adminCredentials.email && password === adminCredentials.password) {
-        localStorage.setItem("role", "admin"); // Store role
-        navigate("/dashboard"); // Redirect to admin dashboard
-      } else if (email === residentCredentials.email && password === residentCredentials.password) {
-        localStorage.setItem("role", "resident"); // Store role
-        navigate("/residashboard"); // Redirect to resident dashboard
+      const { token, role } = response.data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
+
+      if (role === "admin") {
+        navigate("/dashboard");
       } else {
-        setErrorMessage("Invalid credentials. Please try again.");
+        navigate("/residashboard");
       }
-    }, 2000); // Simulated API delay
+    } catch (error) {
+      setErrorMessage(error.response?.data?.message || "Invalid credentials. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -57,7 +60,9 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         {errorMessage && <p className="error">{errorMessage}</p>}
-        {loading ? <p>Loading...</p> : <button type="submit">Login</button>}
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </button>
       </form>
       <p>
         Don't have an account? <Link to="/signup">Sign up</Link>

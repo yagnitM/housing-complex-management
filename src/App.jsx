@@ -2,16 +2,16 @@ import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import Home from "./pages/Home"; 
+import Home from "./pages/Home";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
-import Dashboard from "./pages/Dashboard";  
+import Dashboard from "./pages/Dashboard";
 import ResiDashboard from "./pages/ResiDashboard";
-import About from "./components/About"; 
+import About from "./components/About";
 import Services from "./components/Services";
 import CommunityNotices from "./components/CommunityNotices";
 import ContactUs from "./components/ContactUs";
-import AddApartmentForm from "./components/AddApartmentForm"; 
+import AddApartmentForm from "./components/AddApartmentForm";
 import AddSocietyForm from "./components/AddSocietyForm";
 
 function App() {
@@ -21,7 +21,7 @@ function App() {
     <>
       {/* Conditionally render Header based on the route */}
       {location.pathname !== "/dashboard" && location.pathname !== "/residashboard" && <Header />}
-      
+
       <div id="root">
         <div className="main-content">
           <Routes>
