@@ -9,18 +9,16 @@ body {
   font-family: "Arial", sans-serif;
   line-height: 1.6;
   color: #333;
-  display: flex; /* Use flexbox for the body */
-  flex-direction: column; /* Stack children vertically */
 }
 
 #root {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Ensures full viewport height */
+  min-height: 100vh;
 }
 
 .main-content {
-  flex: 1; /* Pushes the footer to the bottom when there's little content */
+  flex: 1;
 }
 
 header {
@@ -60,7 +58,7 @@ header a {
   text-align: center;
   padding: 50px 20px;
   background: linear-gradient(135deg, #ffffff, #e6e6e6);
-  flex: 1; /* Allow the home-main to grow and take available space */
+  flex: 1;
 }
 
 .home-main h1 {
@@ -103,46 +101,13 @@ header a {
   transition: all 0.3s ease-in-out;
 }
 
-.login-container {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
+.auth-link:hover {
+  background-color: #0056b3;
 }
 
-.signup-container {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-  display: flex;
-  flex-direction: column; /* Ensure form elements are stacked vertically */
-}
+/* Signup container styles removed - now in Signup.css */
 
-.checkbox-container {
-  display: flex;
-  align-items: center; /* Align checkbox and label on the same line */
-  margin-top: 15px; /* Add spacing above the checkbox */
-  width: 100%; /* Ensure the container takes full width */
-}
-
-.checkbox-container input {
-  margin: 0; /* Remove margin to align checkbox to the left */
-  width: auto; /* Ensure the checkbox does not stretch */
-}
-
-.checkbox-container label {
-  font-size: 14px;
-  line-height: 1.5;
-  margin-left: 5px; /* Add space between the checkbox and the label */
-}
-
+/* General form styles - kept for other components */
 input {
   width: 100%;
   padding: 10px;
@@ -168,10 +133,6 @@ button:hover {
 .error {
   color: red;
   font-size: 14px;
-}
-
-.auth-link:hover {
-  background-color: #0056b3;
 }
 
 @media (max-width: 768px) {
@@ -217,7 +178,6 @@ button:hover {
   transform: translateY(-5px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
-
 
 .grid-item img {
   max-width: 100%;
@@ -284,7 +244,7 @@ button:hover {
   margin: 0;
   padding: 0;
   display: flex;
-  justify-content: space-evenly; 
+  justify-content: space-evenly;
 }
 
 .navbar-link {

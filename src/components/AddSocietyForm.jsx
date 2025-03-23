@@ -46,7 +46,7 @@ const AddSocietyForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/societies", formData);
+      const response = await axios.post("http://localhost:6060/api/societies", formData);
       alert("Society Added Successfully!");
       navigate("/add-apartment"); // Redirect to AddApartmentForm.jsx
     } catch (error) {

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import "./Signup.css"; // Updated to import the component-specific CSS
 
 const Signup = () => {
   const [username, setUsername] = useState("");
