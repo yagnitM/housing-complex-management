@@ -453,7 +453,7 @@ button:hover {
 }
 
 .testimonial-card::before {
-  content: """;
+  content: "“";  /* Opening quotation mark */
   font-size: 120px;
   position: absolute;
   top: -20px;
