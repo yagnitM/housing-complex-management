@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import for redirection
-import axios from "axios"; // Import axios for API requests
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./AddSocietyForm.css";
+import { FaBuilding, FaMapMarkerAlt, FaLink, FaBed, FaSwimmingPool, 
+         FaParking, FaDumbbell, FaShieldAlt, FaArrowLeft } from "react-icons/fa";
 
 const AddSocietyForm = () => {
-  const navigate = useNavigate(); // Initialize navigate function
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -22,6 +24,21 @@ const AddSocietyForm = () => {
       Pool: false,
     },
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.name.trim()) errors.name = "Society name is required";
+    if (!formData.address.trim()) errors.address = "Address is required";
+    
+    // Check if at least one room type has a count
+    const hasRooms = Object.values(formData.rooms).some(room => room.count > 0);
+    if (!hasRooms) errors.rooms = "Please add at least one room type";
+    
+    return errors;
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -41,72 +58,252 @@ const AddSocietyForm = () => {
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
+    
+    // Clear error when field is updated
+    if (formErrors[name]) {
+      setFormErrors(prev => ({...prev, [name]: null}));
+    }
+  };
+
+  const handleRoomCountChange = (roomType, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      rooms: {
+        ...prev.rooms,
+        [roomType]: { ...prev.rooms[roomType], count: Number(value) },
+      },
+    }));
+    
+    // Clear room error when any room is updated
+    if (formErrors.rooms) {
+      setFormErrors(prev => ({...prev, rooms: null}));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    
+    setIsSubmitting(true);
     try {
       const response = await axios.post("http://localhost:6060/api/societies", formData);
-      alert("Society Added Successfully!");
-      navigate("/add-apartment"); // Redirect to AddApartmentForm.jsx
+      
+      // Show success notification
+      const notification = document.createElement('div');
+      notification.className = 'success-notification';
+      notification.textContent = 'Society Added Successfully!';
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        document.body.removeChild(notification);
+        navigate("/add-apartment");
+      }, 2000);
+      
     } catch (error) {
       console.error("Error adding society:", error);
-      alert("Failed to add society. Please try again.");
+      setFormErrors({submit: "Failed to add society. Please try again."});
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="add-society-container">
-      <h2>Add New Society</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Society Name:
-          <input type="text" name="name" value={formData.name} onChange={handleChange} required />
-        </label>
-        <label>
-          Address:
-          <input type="text" name="address" value={formData.address} onChange={handleChange} required />
-        </label>
-        <label>
-          Location (Google Maps URL):
-          <input type="text" name="location" value={formData.location} onChange={handleChange} />
-        </label>
-
-        <h3>Room Details</h3>
-        {Object.keys(formData.rooms).map((roomType) => (
-          <div key={roomType} className="room-entry">
-            <label>{roomType} Count:</label>
-            <input
-              type="number"
-              name={roomType}
-              value={formData.rooms[roomType].count}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  rooms: {
-                    ...prev.rooms,
-                    [roomType]: { ...prev.rooms[roomType], count: Number(e.target.value) },
-                  },
-                }))
-              }
-            />
-            <label>Price:</label>
-            <input type="number" name={roomType} value={formData.rooms[roomType].price} onChange={handleChange} />
-          </div>
-        ))}
-
-        <h3>Facilities</h3>
-        <div className="facilities-container">
-          {Object.keys(formData.facilities).map((facility) => (
-            <div key={facility} className="facility-card">
-              <input type="checkbox" id={facility} name={facility} checked={formData.facilities[facility]} onChange={handleChange} />
-              <label htmlFor={facility}>{facility}</label>
-            </div>
-          ))}
+    <div className="form-page-container">
+      <div className="navigation-bar">
+        <button 
+          type="button" 
+          className="back-nav-button"
+          onClick={() => navigate(-1)}
+        >
+          <FaArrowLeft /> Back to Dashboard
+        </button>
+      </div>
+      
+      <div className="add-society-container">
+        <div className="form-header">
+          <h2><FaBuilding className="header-icon" /> Add New Society</h2>
+          <p>Create a new residential society to manage apartments within it</p>
         </div>
+        
+        <form onSubmit={handleSubmit}>
+          <div className="form-section">
+            <h3>Basic Information</h3>
+            <div className="form-group">
+              <label htmlFor="name">
+                <FaBuilding className="input-icon" /> Society Name
+              </label>
+              <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                value={formData.name} 
+                onChange={handleChange} 
+                placeholder="Enter society name"
+                className={formErrors.name ? "error" : ""}
+              />
+              {formErrors.name && <div className="error-message">{formErrors.name}</div>}
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="address">
+                <FaMapMarkerAlt className="input-icon" /> Address
+              </label>
+              <input 
+                type="text" 
+                id="address" 
+                name="address" 
+                value={formData.address} 
+                onChange={handleChange} 
+                placeholder="Enter complete address"
+                className={formErrors.address ? "error" : ""}
+              />
+              {formErrors.address && <div className="error-message">{formErrors.address}</div>}
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="location">
+                <FaLink className="input-icon" /> Location (Google Maps URL)
+              </label>
+              <input 
+                type="text" 
+                id="location" 
+                name="location" 
+                value={formData.location} 
+                onChange={handleChange} 
+                placeholder="Paste Google Maps link (optional)"
+              />
+            </div>
+          </div>
 
-        <button type="submit">Add Society</button>
-      </form>
+          <div className="form-section">
+            <h3><FaBed className="section-icon" /> Room Details</h3>
+            {formErrors.rooms && <div className="error-message section-error">{formErrors.rooms}</div>}
+            
+            <div className="room-entries">
+              {Object.keys(formData.rooms).map((roomType) => (
+                <div key={roomType} className="room-card">
+                  <h4>{roomType}</h4>
+                  <div className="room-inputs">
+                    <div className="input-group">
+                      <label htmlFor={`${roomType}-count`}>Count</label>
+                      <input
+                        id={`${roomType}-count`}
+                        type="text" 
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        value={formData.rooms[roomType].count}
+                        onChange={(e) => handleRoomCountChange(roomType, e.target.value)}
+                      />
+                    </div>
+                    
+                    <div className="input-group">
+                      <label htmlFor={`${roomType}-price`}>Price (₹)</label>
+                      <input 
+                        id={`${roomType}-price`}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        name={roomType} 
+                        value={formData.rooms[roomType].price} 
+                        onChange={handleChange} 
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="form-section">
+            <h3>Facilities</h3>
+            <div className="facilities-container">
+              <div className="facility-card">
+                <input 
+                  type="checkbox" 
+                  id="Parking" 
+                  name="Parking" 
+                  checked={formData.facilities.Parking} 
+                  onChange={handleChange} 
+                />
+                <label htmlFor="Parking">
+                  <div className="facility-icon-container">
+                    <FaParking className="facility-icon" />
+                  </div>
+                  <span>Parking</span>
+                </label>
+              </div>
+              
+              <div className="facility-card">
+                <input 
+                  type="checkbox" 
+                  id="Gymnasium" 
+                  name="Gymnasium" 
+                  checked={formData.facilities.Gymnasium} 
+                  onChange={handleChange} 
+                />
+                <label htmlFor="Gymnasium">
+                  <div className="facility-icon-container">
+                    <FaDumbbell className="facility-icon" />
+                  </div>
+                  <span>Gymnasium</span>
+                </label>
+              </div>
+              
+              <div className="facility-card">
+                <input 
+                  type="checkbox" 
+                  id="Security" 
+                  name="Security" 
+                  checked={formData.facilities.Security} 
+                  onChange={handleChange} 
+                />
+                <label htmlFor="Security">
+                  <div className="facility-icon-container">
+                    <FaShieldAlt className="facility-icon" />
+                  </div>
+                  <span>Security</span>
+                </label>
+              </div>
+              
+              <div className="facility-card">
+                <input 
+                  type="checkbox" 
+                  id="Pool" 
+                  name="Pool" 
+                  checked={formData.facilities.Pool} 
+                  onChange={handleChange} 
+                />
+                <label htmlFor="Pool">
+                  <div className="facility-icon-container">
+                    <FaSwimmingPool className="facility-icon" />
+                  </div>
+                  <span>Swimming Pool</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          {formErrors.submit && <div className="error-message form-error">{formErrors.submit}</div>}
+          
+          <div className="form-actions">
+            <button type="button" className="cancel-button" onClick={() => navigate(-1)}>
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              className="submit-button" 
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Adding..." : "Add Society"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
