@@ -13,6 +13,7 @@ import CommunityNotices from "./components/CommunityNotices";
 import ContactUs from "./components/ContactUs";
 import AddApartmentForm from "./components/AddApartmentForm";
 import AddSocietyForm from "./components/AddSocietyForm";
+import GuestDash from "./pages/GuestDash";
 
 function App() {
   const location = useLocation();
@@ -36,6 +37,7 @@ function App() {
             <Route path="/contact-us" element={<ContactUs />} />
             <Route path="/add-apartment" element={<AddApartmentForm />} />
             <Route path="/add-society" element={<AddSocietyForm />} />
+            <Route path="/guest-dashboard" element={<GuestDash />} />
           </Routes>
         </div>
         <Footer />

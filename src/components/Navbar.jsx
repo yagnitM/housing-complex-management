@@ -26,6 +26,9 @@ const Navbar = () => {
         <li>
           <Link to="/contact-us" className="navbar-link">Contact Us</Link>
         </li>
+        <li>
+          <Link to="/guest-dashboard" className="navbar-link">Explore as Guest</Link>
+        </li>
         {isLoggedIn ? (
           <>
             <li>
@@ -37,6 +40,7 @@ const Navbar = () => {
           </>
         ) : (
           <>
+            
           </>
         )}
       </ul>

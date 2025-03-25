@@ -1,17 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./AddSocietyForm.css";
-import { FaBuilding, FaMapMarkerAlt, FaLink, FaBed, FaSwimmingPool, 
-         FaParking, FaDumbbell, FaShieldAlt, FaArrowLeft } from "react-icons/fa";
+import { 
+  FaBuilding, FaMapMarkerAlt, FaLink, FaBed, FaSwimmingPool, 
+  FaParking, FaDumbbell, FaShieldAlt, FaArrowLeft, FaMap 
+} from "react-icons/fa";
+
+// Leaflet Imports
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import "leaflet-control-geocoder";
 
 const AddSocietyForm = () => {
   const navigate = useNavigate();
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const markerRef = useRef(null);
 
+  const [showMap, setShowMap] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     address: "",
     location: "",
+    coordinates: null,
     rooms: {
       "1BHK": { count: 0, price: 0 },
       "2BHK": { count: 0, price: 0 },
@@ -28,6 +40,69 @@ const AddSocietyForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState({});
 
+  // Map Initialization Effect
+  useEffect(() => {
+    if (showMap && mapRef.current && !mapInstanceRef.current) {
+      // Initialize map
+      mapInstanceRef.current = L.map(mapRef.current).setView([20.5937, 78.9629], 5);
+      
+      // Add OpenStreetMap tiles
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(mapInstanceRef.current);
+
+      // Add geocoder control
+      const geocoder = L.Control.geocoder({
+        defaultMarkGeocode: false
+      }).addTo(mapInstanceRef.current);
+
+      geocoder.on('markgeocode', (e) => {
+        const { center, name } = e.geocode;
+        updateLocationFromGeocoder(center, name);
+      });
+
+      // Handle map click to set location
+      mapInstanceRef.current.on('click', (e) => {
+        const { lat, lng } = e.latlng;
+        
+        // Remove existing marker if any
+        if (markerRef.current) {
+          mapInstanceRef.current.removeLayer(markerRef.current);
+        }
+
+        // Add new marker
+        markerRef.current = L.marker([lat, lng]).addTo(mapInstanceRef.current);
+
+        // Reverse geocode to get address
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+          .then(response => response.json())
+          .then(data => {
+            const address = data.display_name || `Latitude: ${lat}, Longitude: ${lng}`;
+            updateLocationFromGeocoder({ lat, lng }, address);
+          })
+          .catch(error => {
+            console.error('Reverse geocoding error:', error);
+            updateLocationFromGeocoder({ lat, lng }, `Latitude: ${lat}, Longitude: ${lng}`);
+          });
+      });
+    }
+  }, [showMap]);
+
+  // Location Update Handler
+  const updateLocationFromGeocoder = (center, address) => {
+    setFormData(prev => ({
+      ...prev,
+      address: address,
+      location: `https://www.openstreetmap.org/?mlat=${center.lat}&mlon=${center.lng}#map=15/${center.lat}/${center.lng}`,
+      coordinates: {
+        latitude: center.lat,
+        longitude: center.lng
+      }
+    }));
+    setShowMap(false);
+  };
+
+  // Form Validation
   const validateForm = () => {
     const errors = {};
     if (!formData.name.trim()) errors.name = "Society name is required";
@@ -40,6 +115,7 @@ const AddSocietyForm = () => {
     return errors;
   };
 
+  // Change Handlers
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     if (name in formData.rooms) {
@@ -65,6 +141,7 @@ const AddSocietyForm = () => {
     }
   };
 
+  // Room Count Change Handler
   const handleRoomCountChange = (roomType, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -80,6 +157,7 @@ const AddSocietyForm = () => {
     }
   };
 
+  // Form Submission Handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -91,7 +169,13 @@ const AddSocietyForm = () => {
     
     setIsSubmitting(true);
     try {
-      const response = await axios.post("http://localhost:6060/api/societies", formData);
+      const token = localStorage.getItem("token")
+      const response = await axios.post("http://localhost:6060/api/societies/add", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
       
       // Show success notification
       const notification = document.createElement('div');
@@ -99,9 +183,12 @@ const AddSocietyForm = () => {
       notification.textContent = 'Society Added Successfully!';
       document.body.appendChild(notification);
       
+      // Pass the society ID when navigating to add-apartment
       setTimeout(() => {
         document.body.removeChild(notification);
-        navigate("/add-apartment");
+        navigate("/add-apartment", { 
+          state: { societyId: response.data._id }
+        });
       }, 2000);
       
     } catch (error) {
@@ -110,6 +197,37 @@ const AddSocietyForm = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Location Input Renderer
+  const renderLocationInput = () => {
+    return (
+      <div className="form-group location-input">
+        <label htmlFor="location">
+          <FaLink className="input-icon" /> Location (OpenStreetMap URL)
+        </label>
+        <div className="location-input-container">
+          <input 
+            type="text" 
+            id="location" 
+            name="location" 
+            value={formData.location} 
+            onChange={handleChange} 
+            placeholder="Location URL or Select on Map"
+          />
+          <button 
+            type="button" 
+            className="map-selector-button" 
+            onClick={() => setShowMap(true)}
+          >
+            <FaMap /> Pick Location
+          </button>
+        </div>
+        {showMap && (
+          <div ref={mapRef} className="location-picker-map"></div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -165,19 +283,7 @@ const AddSocietyForm = () => {
               {formErrors.address && <div className="error-message">{formErrors.address}</div>}
             </div>
             
-            <div className="form-group">
-              <label htmlFor="location">
-                <FaLink className="input-icon" /> Location (Google Maps URL)
-              </label>
-              <input 
-                type="text" 
-                id="location" 
-                name="location" 
-                value={formData.location} 
-                onChange={handleChange} 
-                placeholder="Paste Google Maps link (optional)"
-              />
-            </div>
+            {renderLocationInput()}
           </div>
 
           <div className="form-section">
@@ -222,69 +328,26 @@ const AddSocietyForm = () => {
           <div className="form-section">
             <h3>Facilities</h3>
             <div className="facilities-container">
-              <div className="facility-card">
-                <input 
-                  type="checkbox" 
-                  id="Parking" 
-                  name="Parking" 
-                  checked={formData.facilities.Parking} 
-                  onChange={handleChange} 
-                />
-                <label htmlFor="Parking">
-                  <div className="facility-icon-container">
-                    <FaParking className="facility-icon" />
-                  </div>
-                  <span>Parking</span>
-                </label>
-              </div>
-              
-              <div className="facility-card">
-                <input 
-                  type="checkbox" 
-                  id="Gymnasium" 
-                  name="Gymnasium" 
-                  checked={formData.facilities.Gymnasium} 
-                  onChange={handleChange} 
-                />
-                <label htmlFor="Gymnasium">
-                  <div className="facility-icon-container">
-                    <FaDumbbell className="facility-icon" />
-                  </div>
-                  <span>Gymnasium</span>
-                </label>
-              </div>
-              
-              <div className="facility-card">
-                <input 
-                  type="checkbox" 
-                  id="Security" 
-                  name="Security" 
-                  checked={formData.facilities.Security} 
-                  onChange={handleChange} 
-                />
-                <label htmlFor="Security">
-                  <div className="facility-icon-container">
-                    <FaShieldAlt className="facility-icon" />
-                  </div>
-                  <span>Security</span>
-                </label>
-              </div>
-              
-              <div className="facility-card">
-                <input 
-                  type="checkbox" 
-                  id="Pool" 
-                  name="Pool" 
-                  checked={formData.facilities.Pool} 
-                  onChange={handleChange} 
-                />
-                <label htmlFor="Pool">
-                  <div className="facility-icon-container">
-                    <FaSwimmingPool className="facility-icon" />
-                  </div>
-                  <span>Swimming Pool</span>
-                </label>
-              </div>
+              {Object.keys(formData.facilities).map((facility) => (
+                <div key={facility} className="facility-card">
+                  <input 
+                    type="checkbox" 
+                    id={facility} 
+                    name={facility} 
+                    checked={formData.facilities[facility]} 
+                    onChange={handleChange} 
+                  />
+                  <label htmlFor={facility}>
+                    <div className="facility-icon-container">
+                      {facility === "Parking" && <FaParking className="facility-icon" />}
+                      {facility === "Gymnasium" && <FaDumbbell className="facility-icon" />}
+                      {facility === "Security" && <FaShieldAlt className="facility-icon" />}
+                      {facility === "Pool" && <FaSwimmingPool className="facility-icon" />}
+                    </div>
+                    <span>{facility === "Pool" ? "Swimming Pool" : facility}</span>
+                  </label>
+                </div>
+              ))}
             </div>
           </div>
           
