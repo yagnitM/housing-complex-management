@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Import axios
 import './GuestDash.css';
 import { FaHome, FaSearch, FaFilter, FaStar } from 'react-icons/fa';
 import { MdLocationOn } from 'react-icons/md';
@@ -18,12 +19,21 @@ const GuestDash = () => {
     propertyType: 'All'
   });
 
+  // Replace with your actual society ID
+  const societyId = localStorage.getItem('societyId') || 'default-society-id';
+
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await fetch('/api/public-properties');
-        const data = await response.json();
-        setProperties(data);
+        // Fetch properties using axios
+        const response = await axios.get(`http://localhost:6060/api/apartment/society/${societyId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}` // Add token if authentication is required
+          }
+        });
+
+        // Assuming the response.data contains the list of apartments
+        setProperties(response.data);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching properties:', error);
@@ -32,7 +42,7 @@ const GuestDash = () => {
     };
 
     fetchProperties();
-  }, []);
+  }, [societyId]);
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -60,15 +70,31 @@ const GuestDash = () => {
   };
 
   const filteredProperties = properties.filter(property => {
-    const matchesSearch = property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          property.location.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesMinPrice = filters.minPrice === '' || property.price >= parseInt(filters.minPrice);
-    const matchesMaxPrice = filters.maxPrice === '' || property.price <= parseInt(filters.maxPrice);
-    const matchesBedrooms = filters.bedrooms === '' || property.bedrooms >= parseInt(filters.bedrooms);
-    const matchesBathrooms = filters.bathrooms === '' || property.bathrooms >= parseInt(filters.bathrooms);
-    const matchesPropertyType = filters.propertyType === 'All' || property.propertyType === filters.propertyType;
+    const matchesSearch = 
+      property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      property.location.toLowerCase().includes(searchTerm.toLowerCase());
     
-    return matchesSearch && matchesMinPrice && matchesMaxPrice && matchesBedrooms && matchesBathrooms && matchesPropertyType;
+    const matchesMinPrice = 
+      filters.minPrice === '' || property.price >= parseInt(filters.minPrice);
+    
+    const matchesMaxPrice = 
+      filters.maxPrice === '' || property.price <= parseInt(filters.maxPrice);
+    
+    const matchesBedrooms = 
+      filters.bedrooms === '' || property.bedrooms >= parseInt(filters.bedrooms);
+    
+    const matchesBathrooms = 
+      filters.bathrooms === '' || property.bathrooms >= parseInt(filters.bathrooms);
+    
+    const matchesPropertyType = 
+      filters.propertyType === 'All' || property.propertyType === filters.propertyType;
+    
+    return matchesSearch && 
+           matchesMinPrice && 
+           matchesMaxPrice && 
+           matchesBedrooms && 
+           matchesBathrooms && 
+           matchesPropertyType;
   });
 
   return (
@@ -101,14 +127,30 @@ const GuestDash = () => {
           <div className="filter-group">
             <label>Price Range:</label>
             <div className="price-inputs">
-              <input type="number" name="minPrice" placeholder="Min" value={filters.minPrice} onChange={handleFilterChange} />
+              <input 
+                type="number" 
+                name="minPrice" 
+                placeholder="Min" 
+                value={filters.minPrice} 
+                onChange={handleFilterChange} 
+              />
               <span>to</span>
-              <input type="number" name="maxPrice" placeholder="Max" value={filters.maxPrice} onChange={handleFilterChange} />
+              <input 
+                type="number" 
+                name="maxPrice" 
+                placeholder="Max" 
+                value={filters.maxPrice} 
+                onChange={handleFilterChange} 
+              />
             </div>
           </div>
           <div className="filter-group">
             <label>Bedrooms:</label>
-            <select name="bedrooms" value={filters.bedrooms} onChange={handleFilterChange}>
+            <select 
+              name="bedrooms" 
+              value={filters.bedrooms} 
+              onChange={handleFilterChange}
+            >
               <option value="">Any</option>
               <option value="1">1+</option>
               <option value="2">2+</option>
@@ -118,11 +160,29 @@ const GuestDash = () => {
           </div>
           <div className="filter-group">
             <label>Bathrooms:</label>
-            <select name="bathrooms" value={filters.bathrooms} onChange={handleFilterChange}>
+            <select 
+              name="bathrooms" 
+              value={filters.bathrooms} 
+              onChange={handleFilterChange}
+            >
               <option value="">Any</option>
               <option value="1">1+</option>
               <option value="2">2+</option>
               <option value="3">3+</option>
+            </select>
+          </div>
+          <div className="filter-group">
+            <label>Property Type:</label>
+            <select 
+              name="propertyType" 
+              value={filters.propertyType} 
+              onChange={handleFilterChange}
+            >
+              <option value="All">All Types</option>
+              <option value="Apartment">Apartment</option>
+              <option value="House">House</option>
+              <option value="Condo">Condo</option>
+              <option value="Townhouse">Townhouse</option>
             </select>
           </div>
         </div>
@@ -135,17 +195,30 @@ const GuestDash = () => {
           <div className="property-grid">
             {filteredProperties.length > 0 ? (
               filteredProperties.map(property => (
-                <div className="property-card" key={property.id}>
-                  <div className="property-image">
-                    <img src={property.image} alt={property.title} />
-                    <button className="favorite-button" onClick={handleSignUpPrompt}>♡</button>
-                  </div>
+                <div className="property-card" key={property._id}>
                   <div className="property-details">
                     <h3>{property.title}</h3>
-                    <div className="property-location"><MdLocationOn /> {property.location}</div>
-                    <div className="property-price">${property.price}/month</div>
-                    <div className="property-rating"><FaStar className="star-icon" /><span>{property.rating}</span></div>
-                    <button className="view-details-button" onClick={handleSignUpPrompt}>View Details</button>
+                    <div className="property-location">
+                      <MdLocationOn /> {property.location}
+                    </div>
+                    <div className="property-price">
+                      ${property.price}/month
+                    </div>
+                    <div className="property-features">
+                      <span>{property.bedrooms} Beds</span>
+                      <span>{property.bathrooms} Baths</span>
+                      <span>{property.propertyType}</span>
+                    </div>
+                    <div className="property-rating">
+                      <FaStar className="star-icon" />
+                      <span>{property.rating || 'N/A'}</span>
+                    </div>
+                    <button 
+                      className="view-details-button" 
+                      onClick={handleSignUpPrompt}
+                    >
+                      View Details
+                    </button>
                   </div>
                 </div>
               ))

@@ -14,6 +14,7 @@ import ContactUs from "./components/ContactUs";
 import AddApartmentForm from "./components/AddApartmentForm";
 import AddSocietyForm from "./components/AddSocietyForm";
 import GuestDash from "./pages/GuestDash";
+import PersonalDashboardAdmin from "./components/PersonalDashboardAdmin";
 
 function App() {
   const location = useLocation();
@@ -38,6 +39,7 @@ function App() {
             <Route path="/add-apartment" element={<AddApartmentForm />} />
             <Route path="/add-society" element={<AddSocietyForm />} />
             <Route path="/guest-dashboard" element={<GuestDash />} />
+            <Route path="/personal-dashboard-admin" element={<PersonalDashboardAdmin />} />
           </Routes>
         </div>
         <Footer />
