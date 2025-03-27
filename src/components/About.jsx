@@ -33,7 +33,7 @@ const About = () => {
         </div>
         <div className="team-member">
           <h3>Yagnit Mahajan</h3>
-          <p>CEO - Leading our vision and ensuring the highest quality of service.</p>
+          <p>CTO - Driving the technological innovation and development of Housingfy.</p>
         </div>
       </section>
     </main>

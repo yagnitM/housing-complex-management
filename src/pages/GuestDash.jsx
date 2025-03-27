@@ -1,56 +1,51 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Import axios
+import React, { useState } from 'react';
 import './GuestDash.css';
-import { FaHome, FaSearch, FaFilter, FaStar } from 'react-icons/fa';
+import { FaHome, FaSearch, FaFilter, FaCar, FaDumbbell, FaShieldAlt, FaSwimmer } from 'react-icons/fa';
 import { MdLocationOn } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
 const GuestDash = () => {
   const navigate = useNavigate();
-  const [properties, setProperties] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterOpen, setFilterOpen] = useState(false);
-  const [filters, setFilters] = useState({
-    minPrice: '',
-    maxPrice: '',
-    bedrooms: '',
-    bathrooms: '',
-    propertyType: 'All'
-  });
 
-  // Replace with your actual society ID
-  const societyId = localStorage.getItem('societyId') || 'default-society-id';
-
-  useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        // Fetch properties using axios
-        const response = await axios.get(`http://localhost:6060/api/apartment/society/${societyId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}` // Add token if authentication is required
-          }
-        });
-
-        // Assuming the response.data contains the list of apartments
-        setProperties(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching properties:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchProperties();
-  }, [societyId]);
+  const societies = [
+    {
+      id: 1,
+      name: 'Prestige Lakeview Residency',
+      address: 'Whitefield, Bangalore, Karnataka',
+      image: 'https://oss-brigade.s3.ap-southeast-1.amazonaws.com/property/prestige-lakeside-habitat/banner__92541fd2-93bc-4019-80c3-f99b00939f28.jpeg',
+      rooms: { '1 BHK': { count: 5, price: 15000 }, '2 BHK': { count: 3, price: 25000 } },
+      facilities: { Parking: true, Gymnasium: true, Security: true, Pool: true }
+    },
+    {
+      id: 2,
+      name: 'Gaur City Apartments',
+      address: 'Noida Extension, Uttar Pradesh',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZrzsyr8Dmrn7J2k2Dw4fmVzuTnSbW8SBQiQ&s',
+      rooms: { '2 BHK': { count: 6, price: 18000 }, '3 BHK': { count: 4, price: 28000 } },
+      facilities: { Parking: true, Gymnasium: true, Security: true, Pool: false }
+    },
+    {
+      id: 3,
+      name: 'Lodha Palava City',
+      address: 'Dombivli, Mumbai, Maharashtra',
+      image: 'https://www.gharjunction.com/server/php/files/property/64/lodha-palava-1.jpg',
+      rooms: { '1 BHK': { count: 7, price: 12000 }, '2 BHK': { count: 5, price: 22000 } },
+      facilities: { Parking: true, Gymnasium: false, Security: true, Pool: true }
+    },
+    {
+      id: 4,
+      name: 'Brigade Panorama',
+      address: 'Mysore Road, Bangalore, Karnataka',
+      image: 'https://is1-3.housingcdn.com/4f2250e8/5aace6269c8c00e1febeebeb5cd0a1d9/v0/fs/brigade_panorama-mysore_road_kethiganahalli-bengaluru-brigade_enterprises_ltd.jpeg',
+      rooms: { '3 BHK': { count: 2, price: 32000 }, '4 BHK': { count: 1, price: 45000 } },
+      facilities: { Parking: true, Gymnasium: true, Security: false, Pool: true }
+    }
+  ];
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-  };
-
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters({ ...filters, [name]: value });
   };
 
   const toggleFilter = () => {
@@ -65,37 +60,10 @@ const GuestDash = () => {
     navigate('/signup');
   };
 
-  const handleSignUpPrompt = () => {
-    alert("Sign up to save properties and contact property owners!");
-  };
-
-  const filteredProperties = properties.filter(property => {
-    const matchesSearch = 
-      property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.location.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesMinPrice = 
-      filters.minPrice === '' || property.price >= parseInt(filters.minPrice);
-    
-    const matchesMaxPrice = 
-      filters.maxPrice === '' || property.price <= parseInt(filters.maxPrice);
-    
-    const matchesBedrooms = 
-      filters.bedrooms === '' || property.bedrooms >= parseInt(filters.bedrooms);
-    
-    const matchesBathrooms = 
-      filters.bathrooms === '' || property.bathrooms >= parseInt(filters.bathrooms);
-    
-    const matchesPropertyType = 
-      filters.propertyType === 'All' || property.propertyType === filters.propertyType;
-    
-    return matchesSearch && 
-           matchesMinPrice && 
-           matchesMaxPrice && 
-           matchesBedrooms && 
-           matchesBathrooms && 
-           matchesPropertyType;
-  });
+  const filteredSocieties = societies.filter(society =>
+    society.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    society.address.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="guest-dashboard">
@@ -108,7 +76,7 @@ const GuestDash = () => {
           <FaSearch className="search-icon" />
           <input
             type="text"
-            placeholder="Search by location or property name"
+            placeholder="Search by society name or address"
             value={searchTerm}
             onChange={handleSearchChange}
           />
@@ -122,114 +90,37 @@ const GuestDash = () => {
         </div>
       </header>
 
-      {filterOpen && (
-        <div className="filter-panel">
-          <div className="filter-group">
-            <label>Price Range:</label>
-            <div className="price-inputs">
-              <input 
-                type="number" 
-                name="minPrice" 
-                placeholder="Min" 
-                value={filters.minPrice} 
-                onChange={handleFilterChange} 
-              />
-              <span>to</span>
-              <input 
-                type="number" 
-                name="maxPrice" 
-                placeholder="Max" 
-                value={filters.maxPrice} 
-                onChange={handleFilterChange} 
-              />
-            </div>
-          </div>
-          <div className="filter-group">
-            <label>Bedrooms:</label>
-            <select 
-              name="bedrooms" 
-              value={filters.bedrooms} 
-              onChange={handleFilterChange}
-            >
-              <option value="">Any</option>
-              <option value="1">1+</option>
-              <option value="2">2+</option>
-              <option value="3">3+</option>
-              <option value="4">4+</option>
-            </select>
-          </div>
-          <div className="filter-group">
-            <label>Bathrooms:</label>
-            <select 
-              name="bathrooms" 
-              value={filters.bathrooms} 
-              onChange={handleFilterChange}
-            >
-              <option value="">Any</option>
-              <option value="1">1+</option>
-              <option value="2">2+</option>
-              <option value="3">3+</option>
-            </select>
-          </div>
-          <div className="filter-group">
-            <label>Property Type:</label>
-            <select 
-              name="propertyType" 
-              value={filters.propertyType} 
-              onChange={handleFilterChange}
-            >
-              <option value="All">All Types</option>
-              <option value="Apartment">Apartment</option>
-              <option value="House">House</option>
-              <option value="Condo">Condo</option>
-              <option value="Townhouse">Townhouse</option>
-            </select>
-          </div>
-        </div>
-      )}
-
       <main className="guest-content">
-        {loading ? (
-          <div className="loading">Loading properties...</div>
-        ) : (
-          <div className="property-grid">
-            {filteredProperties.length > 0 ? (
-              filteredProperties.map(property => (
-                <div className="property-card" key={property._id}>
-                  <div className="property-details">
-                    <h3>{property.title}</h3>
-                    <div className="property-location">
-                      <MdLocationOn /> {property.location}
+        <div className="society-grid">
+          {filteredSocieties.map(society => (
+            <div className="society-card" key={society.id}>
+              <img src={society.image} alt={society.name} className="society-image" />
+              <div className="society-details">
+                <h3>{society.name}</h3>
+                <div className="society-location">
+                  <MdLocationOn /> {society.address}
+                </div>
+                <div className="society-rooms">
+                  {Object.entries(society.rooms).map(([roomType, roomData]) => (
+                    <div key={roomType}>
+                      {roomType}: {roomData.count} units, ₹{roomData.price}/month
                     </div>
-                    <div className="property-price">
-                      ${property.price}/month
-                    </div>
-                    <div className="property-features">
-                      <span>{property.bedrooms} Beds</span>
-                      <span>{property.bathrooms} Baths</span>
-                      <span>{property.propertyType}</span>
-                    </div>
-                    <div className="property-rating">
-                      <FaStar className="star-icon" />
-                      <span>{property.rating || 'N/A'}</span>
-                    </div>
-                    <button 
-                      className="view-details-button" 
-                      onClick={handleSignUpPrompt}
-                    >
-                      View Details
-                    </button>
+                  ))}
+                </div>
+                <div className="society-facilities">
+                  <h4>Facilities:</h4>
+                  <div className="facilities-icons">
+                    {society.facilities.Parking && <FaCar title="Parking" />}
+                    {society.facilities.Gymnasium && <FaDumbbell title="Gymnasium" />}
+                    {society.facilities.Security && <FaShieldAlt title="Security" />}
+                    {society.facilities.Pool && <FaSwimmer title="Pool" />}
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="no-properties">
-                <h3>No properties available yet.</h3>
-                <p>Properties will appear here once added by administrators.</p>
+                <button className="view-details-button" onClick={() => alert("Sign up to view more details!")}>View Details</button>
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
       </main>
     </div>
   );
