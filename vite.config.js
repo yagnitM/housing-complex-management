@@ -1,18 +1,12 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// Vite configuration for a React project
 export default defineConfig({
   plugins: [react()],
-  root: '.', // Root directory of your project
+
+  base: "/housing-complex-management/", // Set this to match your GitHub repo name
 
   build: {
-    outDir: 'dist', // Output directory for build files
-    rollupOptions: {
-      input: '/src/main.jsx', // Set main.jsx as the entry module (for React)
-    },
+    outDir: "dist",
   },
-
-  // Optional: If deploying to a subpath, you can configure base like this:
-  base: '/', // Ensure assets are correctly referenced at root
 });
