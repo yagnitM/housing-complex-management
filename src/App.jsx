@@ -15,6 +15,16 @@ import AddApartmentForm from "./components/AddApartmentForm";
 import AddSocietyForm from "./components/AddSocietyForm";
 import GuestDash from "./pages/GuestDash";
 import PersonalDashboardAdmin from "./components/PersonalDashboardAdmin";
+import ManageResident from "./components/ManageResident";
+// import TrackComplaint from "./components/TrackComplaint";
+// import Financial from "./components/Financial";
+// import CommunityEvents from "./components/Community";
+// import Maintain from "./components/Maintain";
+// import Announce from "./components/Announce";
+// import Search from "./components/Search";
+// import Report from "./components/Report";
+
+
 
 function App() {
   const location = useLocation();
@@ -40,6 +50,14 @@ function App() {
             <Route path="/add-society" element={<AddSocietyForm />} />
             <Route path="/guest-dashboard" element={<GuestDash />} />
             <Route path="/personal-dashboard-admin" element={<PersonalDashboardAdmin />} />
+            {/* <Route path="/residents" element={<ManageResident />} />
+            <Route path="/complaints" element={<TrackComplaint />} />
+            <Route path="/finances" element={<Financial />} />
+            <Route path="/events" element={<CommunityEvents />} />
+            <Route path="/maintenance" element={<Maintain />} />
+            <Route path="/announcements" element={<Announce />} />
+            <Route path="/reports" element={<Report />} />
+            <Route path="/search" element={<Search />} /> */}
           </Routes>
         </div>
         <Footer />
