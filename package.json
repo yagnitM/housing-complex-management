@@ -2,6 +2,7 @@
   "name": "vite-project",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "homepage": "https://yagnitM.github.io/housing-complex-management/",
   "scripts": {
     "start": "vite",
